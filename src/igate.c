@@ -31,10 +31,10 @@ int send_command(char* command)
     /* now check succeed or not */
 	
     if (! libusb_control_transfer(device, 0x40, 0, 0, 0, command, (length + 1), 1000)) {
-	printf("Failed to execute command!\n")
+	printf("Failed to execute command!\n");
     }
 
-    return 1
+    return 1;
 }
 
 void connect() 
