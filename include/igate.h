@@ -5,12 +5,10 @@
 extern "C" {
 #endif
 
-void show_commands();
-int send_command(char *argv[]);
+int send_command(char* command);
 void connect();
 void disconnect();
 void reset();
-int shell();
 void init();
 
 #ifdef __cplusplus
