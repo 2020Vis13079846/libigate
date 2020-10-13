@@ -18,8 +18,6 @@ BootROM -> LLB -> iBoot -> SEP -> Kernel -> Applications
 #define DFU_MODE        (int)0x1222 // DFU Mode
 #define BUF_SIZE        (int)0x10000
 
-#define CMD_LOG	".igate_history" /* history file for readline/history.h */
-
 struct libusb_device_handle *device = NULL; /* initalize device variable with NULL value */
 
 int send_command(char* command) 
