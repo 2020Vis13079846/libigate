@@ -6,6 +6,8 @@ Q         = @
 SRCS      := $(shell find -name "*.c" -print -type f)
 OBJS       = $(patsubst %.c, %.o, $(SRCS))
 
+LDFLAGS    = -L. -ligate -lusb-1.0
+
 .PHONY: all test clean
 
 all: libigate.a
@@ -17,7 +19,7 @@ libigate.a: $(OBJS)
 
 test: test/main.c
 	$(Q) echo [Compile] $<
-	$(Q) $(CC) $< -o main $(CFLAGS) -ligate -L. -Iinclude
+	$(Q) $(CC) $< -o main $(CFLAGS) $(LDFLAGS)
 	$(Q) echo done
 
 clean:
