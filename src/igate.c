@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 
 #include <libusb-1.0/libusb.h>
@@ -32,23 +31,21 @@ void show_commands(bool is_global)
     else printf("  reboot  Reboot iDevice.\n  go <address>  Jump to the specified memory address.\n help  Show available commands.\n");
 }
 
-int send_command(char* argv[]) 
+int send_command(char* command) 
 {
-    char* command = argv[0];
     size_t length = strlen(command);
 
     if (length >= 0x200) {
-	return false;
+	return 0;
     }
 
     /* now check succeed or not */
 	
     if (! libusb_control_transfer(device, 0x40, 0, 0, 0, command, (length + 1), 1000)) {
-	return false;
+	printf("Failed to execute command!\n")
     }
 
-    // okk
-    return true;
+    return 1
 }
 
 void connect() 
@@ -115,7 +112,16 @@ int shell()
 	if (command != NULL) {
 	    add_history(command);
 	    if (fd) fprintf(fd, ">%s\n", command);
-	    send_command(&command);
+	    char* cmd = &command[0];
+            size_t length = strlen(command);
+
+     	    if (length >= 0x200) {
+		printf("Failed to execute command!\n");
+    	    }
+	
+    	    if (! libusb_control_transfer(device, 0x40, 0, 0, 0, command, (length + 1), 1000)) {
+		printf("Failed to execute command!\n");
+    	    }
 				
 	    char* action = strtok(strdup(command), " ");
 	    if (! strcmp(action, "getenv")) {
@@ -124,8 +130,7 @@ int shell()
 		printf("%s\r\n", response);		
 	    }
 				
-	    if (! strcmp(action, "reboot") || ! strcmp(action, "poweroff"))
-		return 105; // terminated
+	    if (! strcmp(action, "reboot") || ! strcmp(action, "poweroff")) return 105; // terminated
 	}	
         free(command);
     }
@@ -138,13 +143,4 @@ int shell()
 void init() 
 {
     libusb_init(NULL);
-}
-
-int main(int argc, char *argv[])
-{
-    if (argc >= 2) {
-        if (! strcmp(argv[1], "-s") || ! strcmp(argv[1], "--shell")) {
-            shell();
-        } else show_commands(true);
-    } else show_commands(true);
 }
